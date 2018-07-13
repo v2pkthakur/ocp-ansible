@@ -1,0 +1,30 @@
+- name: Subscribe to Red Hat Content
+  hosts: all
+  become: true
+  tasks:
+  - name: Get Var Files
+    include_vars: subscription_details.yaml
+
+  - name: Subscribe the host
+    redhat_subscription:
+      state: present
+      username: "user_name"
+      password: "pass"
+      pool_ids: 8a85f98460bfb0470160c2ff250f3e66
+
+  - name: Disable repos 
+    rhsm_repository:
+      name: '*'
+      state: disabled
+   
+  - name: Enable Repos
+    rhsm_repository:
+      name: "{{ item }}"
+      state: enabled
+    with_items:
+    - rhel-7-server-rpms
+    - rhel-7-server-extras-rpms
+    - rhel-7-server-ose-3.9-rpms
+    - rhel-7-fast-datapath-rpms
+    - rhel-7-server-ansible-2.4-rpms
+
